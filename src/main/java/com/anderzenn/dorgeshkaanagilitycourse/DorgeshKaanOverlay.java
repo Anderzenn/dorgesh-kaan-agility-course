@@ -1,22 +1,22 @@
 package com.anderzenn.dorgeshkaanagilitycourse;
 
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.ComponentOrientation;
 import net.runelite.client.ui.overlay.components.ImageComponent;
+import net.runelite.client.util.ImageUtil;
 
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 public class DorgeshKaanOverlay extends OverlayPanel {
-
     private final Client client;
     private final DorgeshKaanAgilityCourse plugin;
     private final Map<String, BufferedImage> itemIcons = new HashMap<>();
@@ -33,6 +33,7 @@ public class DorgeshKaanOverlay extends OverlayPanel {
         setPosition(OverlayPosition.ABOVE_CHATBOX_RIGHT);
         setLayer(OverlayLayer.ABOVE_WIDGETS);
         panelComponent.setOrientation(ComponentOrientation.HORIZONTAL);
+        panelComponent.setGap(new Point(5, 0));
 
         loadIcons();
     }
@@ -47,15 +48,20 @@ public class DorgeshKaanOverlay extends OverlayPanel {
     }
 
     private BufferedImage loadImage(String fileName) {
-        try (InputStream inputStream = getClass().getResourceAsStream("/" + fileName)) {
-            return inputStream != null ? ImageIO.read(inputStream) : null;
+        try {
+            return ImageUtil.loadImageResource(DorgeshKaanAgilityCourse.class, "/" + fileName);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error loading image: {}", fileName, e);
             return null;
         }
     }
 
     public void updateOverlay(String item1, String item2) {
+        if (!plugin.hasSpanner()) {
+            clearOverlay();
+            return;
+        }
+
         this.requestedItem1 = item1;
         this.requestedItem2 = item2;
     }

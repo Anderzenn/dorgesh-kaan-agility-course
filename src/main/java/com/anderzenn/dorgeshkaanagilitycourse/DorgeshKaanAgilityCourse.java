@@ -51,7 +51,6 @@ public class DorgeshKaanAgilityCourse extends Plugin
 	private SpannerWarningOverlay spannerWarningOverlay;
 
 	private static final int REGION_ID = 10833;
-	private static final int SPANNER_ITEM_ID = ItemID.SPANNER;
 
 	private static final Pattern REQUEST_PATTERN = Pattern.compile("The engineer asks you to get a (\\w+) or a (\\w+)");
 
@@ -163,11 +162,11 @@ public class DorgeshKaanAgilityCourse extends Plugin
 		return client.getLocalPlayer() != null && WorldPoint.fromLocal(client, client.getLocalPlayer().getLocalLocation()).getRegionID() == REGION_ID;
 	}
 
-	private boolean hasSpanner() {
+	public boolean hasSpanner() {
 		ItemContainer inventory = client.getItemContainer(InventoryID.INVENTORY);
 		if (inventory != null) {
 			for (Item item : inventory.getItems()) {
-				if (item.getId() == SPANNER_ITEM_ID) {
+				if (item.getId() == ItemID.SPANNER) {
 					return true;
 				}
 			}
