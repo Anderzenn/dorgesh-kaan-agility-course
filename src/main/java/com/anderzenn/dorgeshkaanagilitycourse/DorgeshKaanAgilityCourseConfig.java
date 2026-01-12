@@ -10,6 +10,26 @@ import java.awt.*;
 public interface DorgeshKaanAgilityCourseConfig extends Config
 {
 	@ConfigItem(
+			keyName = "highlightTurgall",
+			name = "Highlight Turgall",
+			description = "Highlight Turgall (NPC ID 2295)"
+	)
+	default boolean highlightTurgall()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			keyName = "turgallHighlightColour",
+			name = "Turgall highlight colour",
+			description = "Colour used to highlight Turgall"
+	)
+	default Color turgallHighlightColour()
+	{
+		return Color.CYAN;
+	}
+
+	@ConfigItem(
 			keyName = "highlightOption",
 			name = "Highlight Option",
 			description = "Highlight the correct item to pick from the boilers"

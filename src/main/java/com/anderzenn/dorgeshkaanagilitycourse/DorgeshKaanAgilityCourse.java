@@ -50,6 +50,9 @@ public class DorgeshKaanAgilityCourse extends Plugin
 	@Inject
 	private SpannerWarningOverlay spannerWarningOverlay;
 
+	@Inject
+	private TurgallHighlightOverlay turgallHighlightOverlay;
+
 	private static final int REGION_ID = 10833;
 
 	private static final Pattern REQUEST_PATTERN = Pattern.compile("The engineer asks you to get a (\\w+) or a (\\w+)");
@@ -64,19 +67,22 @@ public class DorgeshKaanAgilityCourse extends Plugin
 	{
 		overlayManager.add(overlay);
 		overlayManager.add(spannerWarningOverlay);
+		overlayManager.add(turgallHighlightOverlay);
 		//initializeItemPaths();
 
 		// Load saved items in config
 		requestedItem1 = config.requestedItem1();
 		requestedItem2 = config.requestedItem2();
 
-		updateOverlay();
+		// Should fix https://github.com/Anderzenn/dorgesh-kaan-agility-course/issues/1
+		clientThread.invokeLater(this::updateOverlay);
 	}
 
 	@Override
 	protected void shutDown() throws Exception {
 		overlayManager.remove(overlay);
 		overlayManager.remove(spannerWarningOverlay);
+		overlayManager.remove(turgallHighlightOverlay);
 		overlay.clearOverlay();
 		spannerWarningOverlay.clearWarning();
 	}
