@@ -6,17 +6,16 @@ import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayLayer;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayUtil;
 
 import javax.inject.Inject;
-import java.awt.Graphics2D;
-import java.awt.Shape;
+import java.awt.*;
 
+/**
+ * Highlights Turgall, the Dorgesh-Kaan engineer, so he's easy to spot to collect
+ * the spanner from or hand requested items to.
+ */
 public class TurgallHighlightOverlay extends Overlay
 {
-	private static final int REGION_ID = 10833;
-	private static final int TURGALL_NPC_ID = 2295;
-
 	private final Client client;
 	private final DorgeshKaanAgilityCourseConfig config;
 
@@ -25,45 +24,46 @@ public class TurgallHighlightOverlay extends Overlay
 	{
 		this.client = client;
 		this.config = config;
-
 		setPosition(OverlayPosition.DYNAMIC);
 		setLayer(OverlayLayer.ABOVE_SCENE);
 	}
 
 	@Override
-	public java.awt.Dimension render(Graphics2D graphics)
+	public Dimension render(Graphics2D graphics)
 	{
-		if (!config.highlightTurgall())
-		{
-			return null;
-		}
-
-		if (client.getLocalPlayer() == null)
+		if (!config.highlightTurgall() || client.getLocalPlayer() == null)
 		{
 			return null;
 		}
 
 		int regionId = WorldPoint.fromLocal(client, client.getLocalPlayer().getLocalLocation()).getRegionID();
-		if (regionId != REGION_ID)
+		if (regionId != DorgeshKaanConstants.REGION_ID)
 		{
 			return null;
 		}
 
-		for (NPC npc : client.getNpcs())
+		for (NPC npc : client.getTopLevelWorldView().npcs())
 		{
-			if (npc == null || npc.getId() != TURGALL_NPC_ID)
+			if (npc == null || npc.getId() != DorgeshKaanConstants.TURGALL_NPC_ID)
 			{
 				continue;
 			}
 
 			Shape hull = npc.getConvexHull();
-			if (hull != null)
+			if (hull == null)
 			{
-				OverlayUtil.renderPolygon(graphics, hull, config.turgallHighlightColour());
+				continue;
 			}
+
+			Color colour = config.turgallHighlightColour();
+			graphics.setColor(colour);
+			graphics.setStroke(new BasicStroke(config.courseStrokeWidth()));
+			graphics.draw(hull);
+
+			graphics.setColor(new Color(colour.getRed(), colour.getGreen(), colour.getBlue(), 20));
+			graphics.fill(hull);
 		}
 
 		return null;
 	}
 }
-
