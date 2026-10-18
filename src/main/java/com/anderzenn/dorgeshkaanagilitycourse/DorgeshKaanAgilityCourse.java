@@ -323,7 +323,7 @@ public class DorgeshKaanAgilityCourse extends Plugin
 					continue;
 				}
 
-				String optionText = option.getText().trim();
+				String optionText = option.getText().trim().replaceAll("\\s","");
 				if (isRequestedItem(optionText))
 				{
 					option.setTextColor(config.highlightColour().getRGB());
