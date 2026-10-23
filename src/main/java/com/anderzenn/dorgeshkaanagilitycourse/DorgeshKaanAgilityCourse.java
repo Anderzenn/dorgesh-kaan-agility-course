@@ -32,7 +32,8 @@ import java.util.regex.Pattern;
 public class DorgeshKaanAgilityCourse extends Plugin
 {
 	private static final String CONFIG_GROUP = "DorgeshKaanAgilityCourseConfig";
-	private static final Pattern REQUEST_PATTERN = Pattern.compile("The engineer asks you to get a (\\w+) or a (\\w+)");
+	private static final Pattern REQUEST_PATTERN = Pattern.compile("The engineer asks you to get a (\\w+(?: box)?) or a (\\w+(?: box)?)");
+	private static final Pattern WHITESPACE_PATTERN = Pattern.compile("[\\s\\u00A0]+");
 	private static final Pattern LAP_COUNT_PATTERN = Pattern.compile("Your Dorgesh-Kaan Agility lap count is: (\\d+)");
 
 	private static final String GRAPPLE_ITEM_NAME_FRAGMENT = "mith grapple";
@@ -147,11 +148,17 @@ public class DorgeshKaanAgilityCourse extends Plugin
 
 	private void setRequestedItems(String item1, String item2)
 	{
-		requestedItem1 = item1;
-		requestedItem2 = item2.equalsIgnoreCase("power") ? "powerbox" : item2;
+		requestedItem1 = normaliseItemName(item1);
+		requestedItem2 = normaliseItemName(item2);
 
 		configManager.setConfiguration(CONFIG_GROUP, "requestedItem1", requestedItem1);
 		configManager.setConfiguration(CONFIG_GROUP, "requestedItem2", requestedItem2);
+	}
+
+	private static String normaliseItemName(String item)
+	{
+		String name = WHITESPACE_PATTERN.matcher(item).replaceAll("").toLowerCase();
+		return name.equals("power") ? "powerbox" : name;
 	}
 
 	private void clearRequestedItems()
@@ -323,7 +330,7 @@ public class DorgeshKaanAgilityCourse extends Plugin
 					continue;
 				}
 
-				String optionText = option.getText().trim().replaceAll("\\s","");
+				String optionText = WHITESPACE_PATTERN.matcher(option.getText()).replaceAll("");
 				if (isRequestedItem(optionText))
 				{
 					option.setTextColor(config.highlightColour().getRGB());
